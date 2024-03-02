@@ -2,8 +2,7 @@ from .imports import *
 # Create your views here.
 
 @api_view(['GET'])
-# @permission_required('my_store.view_datasmodel', raise_exception=True)
-@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
 def TransactionIndex(request):
     try:
         datas = Transaction.objects.all()
@@ -15,7 +14,7 @@ def TransactionIndex(request):
         return Response({"error":str(e)}, status=500)
     
 @api_view(['POST'])
-@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
 def TransactionStore(request):
     seri = TransactionSerializer(data=request.data)
     if seri.is_valid():
@@ -26,7 +25,7 @@ def TransactionStore(request):
         return Response(seri.errors, status=400)
     
 @api_view(['GET'])
-@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
 def TransactionShow(request, pk):
     try:
         datas = Transaction.objects.get(pk=pk)
@@ -36,13 +35,13 @@ def TransactionShow(request, pk):
         return Response({"errors":"Post Not Found!"}, status=204)
     
 @api_view(['PUT'])
-@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
 def TransactionUpdate(request, pk):
     try:
         datas = Transaction.objects.get(pk=pk)
     except Exception:
         return Response({"errors":"Post Not Found!"}, status=204)
-    seri = TransactionSerializer(datas, data=request.data)
+    seri = TransactionSerializer(datas, data=request.data, partial=True)
     if seri.is_valid():
         seri.save()
         return Response(seri.data, status=200)
@@ -50,7 +49,7 @@ def TransactionUpdate(request, pk):
         return Response(seri.errors, status=400)
     
 @api_view(['DELETE'])
-@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
 def TransactionDelete(request, pk):
     try:
         datas = Transaction.objects.get(pk=pk)

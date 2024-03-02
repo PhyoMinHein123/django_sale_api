@@ -2,8 +2,7 @@ from .imports import *
 # Create your views here.
 
 @api_view(['GET'])
-# @permission_required('my_store.view_productsmodel', raise_exception=True)
-@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
 def ProductIndex(request):
     try:
         products = Product.objects.all()
@@ -15,7 +14,7 @@ def ProductIndex(request):
         return Response({"error":str(e)}, status=500)
     
 @api_view(['POST'])
-@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
 def ProductStore(request):
     seri = ProductSerializer(data=request.data)
     if seri.is_valid():
@@ -26,7 +25,7 @@ def ProductStore(request):
         return Response(seri.errors, status=400)
     
 @api_view(['GET'])
-@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
 def ProductShow(request, pk):
     try:
         products = Product.objects.get(pk=pk)
@@ -36,13 +35,13 @@ def ProductShow(request, pk):
         return Response({"errors":"product Not Found!"}, status=204)
     
 @api_view(['PUT'])
-@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
 def ProductUpdate(request, pk):
     try:
         products = Product.objects.get(pk=pk)
     except Exception:
         return Response({"errors":"product Not Found!"}, status=204)
-    seri = ProductSerializer(products, data=request.data)
+    seri = ProductSerializer(products, data=request.data, partial=True)
     if seri.is_valid():
         seri.save()
         return Response(seri.data, status=200)
@@ -50,7 +49,7 @@ def ProductUpdate(request, pk):
         return Response(seri.errors, status=400)
     
 @api_view(['DELETE'])
-@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
 def ProductDelete(request, pk):
     try:
         products = Product.objects.get(pk=pk)

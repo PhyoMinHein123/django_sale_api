@@ -2,8 +2,7 @@ from .imports import *
 # Create your views here.
 
 @api_view(['GET'])
-# @permission_required('my_store.view_datasmodel', raise_exception=True)
-@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
 def UserIndex(request):
     try:
         datas = CustomUser.objects.all()
@@ -15,7 +14,7 @@ def UserIndex(request):
         return Response({"error":str(e)}, status=500)
     
 @api_view(['POST'])
-@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
 def UserStore(request):
     seri = CustomUserSerializer(data=request.data)
     if seri.is_valid():
@@ -26,7 +25,7 @@ def UserStore(request):
         return Response(seri.errors, status=400)
     
 @api_view(['GET'])
-@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
 def UserShow(request, pk):
     try:
         datas = CustomUser.objects.get(pk=pk)
@@ -36,13 +35,13 @@ def UserShow(request, pk):
         return Response({"errors":"User Not Found!"}, status=204)
     
 @api_view(['PUT'])
-@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
 def UserUpdate(request, pk):
     try:
         datas = CustomUser.objects.get(pk=pk)
     except Exception:
         return Response({"errors":"User Not Found!"}, status=204)
-    seri = CustomUserSerializer(datas, data=request.data)
+    seri = CustomUserSerializer(datas, data=request.data, partial=True)
     if seri.is_valid():
         seri.save()
         return Response(seri.data, status=200)
@@ -50,7 +49,7 @@ def UserUpdate(request, pk):
         return Response(seri.errors, status=400)
     
 @api_view(['DELETE'])
-@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
 def UserDelete(request, pk):
     try:
         datas = CustomUser.objects.get(pk=pk)
