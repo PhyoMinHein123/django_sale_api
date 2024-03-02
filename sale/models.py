@@ -5,7 +5,7 @@ from django.utils.translation import gettext as _
 
 STATUS_CHOICES = (
     ("active", "Active"),
-    ("deactive", "Deactive")
+    ("inactive", "Inactive")
 )
 
 class CustomUser(AbstractUser):
